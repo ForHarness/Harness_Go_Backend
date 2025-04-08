@@ -1,0 +1,366 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>handlers: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">todo_app/handlers/todo_handler.go (16.3%)</option>
+				
+				<option value="file1">todo_app/main.go (0.0%)</option>
+				
+				<option value="file2">todo_app/services/todo_service.go (0.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// handlers/todo_handler.go
+package handlers
+
+import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+
+        "github.com/gorilla/mux"
+        "todo_app/models"
+        "todo_app/services"
+)
+
+// TodoHandler handles requests related to todos
+type TodoHandler struct {
+        // Define any dependencies or fields needed for the handler
+        TodoService services.TodoService
+}
+
+// NewTodoHandler creates a new TodoHandler
+func NewTodoHandler(todoService services.TodoService) *TodoHandler <span class="cov8" title="1">{
+        return &amp;TodoHandler{TodoService: todoService}
+}</span>
+
+// GetAllTodos returns all todos
+func (th *TodoHandler) GetAllTodos(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        todos, err := th.TodoService.GetAllTodos()
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error fetching todos: %s", err.Error()), http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov8" title="1">respondWithJSON(w, http.StatusOK, todos)</span>
+}
+
+// GetTodoByID returns a todo by ID
+func (th *TodoHandler) GetTodoByID(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        vars := mux.Vars(r)
+        todoID := vars["id"]
+
+        todo, err := th.TodoService.GetTodoByID(todoID)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error fetching todo: %s", err.Error()), http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov0" title="0">respondWithJSON(w, http.StatusOK, todo)</span>
+}
+
+// CreateTodo creates a new todo
+func (th *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        var todo models.Todo
+        if err := json.NewDecoder(r.Body).Decode(&amp;todo); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error decoding request body: %s", err.Error()), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">newTodo, err := th.TodoService.CreateTodo(todo)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error creating todo: %s", err.Error()), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">respondWithJSON(w, http.StatusCreated, newTodo)</span>
+}
+
+// UpdateTodo updates an existing todo
+func (th *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        vars := mux.Vars(r)
+        todoID := vars["id"]
+
+        var updatedTodo models.Todo
+        if err := json.NewDecoder(r.Body).Decode(&amp;updatedTodo); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error decoding request body: %s", err.Error()), http.StatusBadRequest)
+                return
+        }</span>
+
+        <span class="cov0" title="0">updatedTodo, err := th.TodoService.UpdateTodo(todoID, updatedTodo)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error updating todo: %s", err.Error()), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">respondWithJSON(w, http.StatusOK, updatedTodo)</span>
+}
+
+// DeleteTodo deletes a todo by ID
+func (th *TodoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+        vars := mux.Vars(r)
+        todoID := vars["id"]
+
+        err := th.TodoService.DeleteTodo(todoID)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, fmt.Sprintf("Error deleting todo: %s", err.Error()), http.StatusInternalServerError)
+                return
+        }</span>
+
+        <span class="cov0" title="0">respondWithJSON(w, http.StatusOK, map[string]string{"message": "Todo deleted successfully"})</span>
+}
+
+func respondWithJSON(w http.ResponseWriter, statusCode int, data interface{}) <span class="cov8" title="1">{
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(statusCode)
+        json.NewEncoder(w).Encode(data)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "database/sql"
+        _ "github.com/go-sql-driver/mysql"
+        "fmt"
+        "log"
+        "net/http"
+        "todo_app/handlers"
+        "todo_app/services"
+
+        "github.com/rs/cors"
+)
+
+func main() <span class="cov0" title="0">{
+        // Initialize database connection
+        db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/todo_app")
+        if err != nil </span><span class="cov0" title="0">{
+                log.Fatal("Error connecting to the database:", err)
+        }</span>
+        <span class="cov0" title="0">defer db.Close()
+
+        // Initialize TodoService
+        todoService := &amp;services.TodoServiceImpl{DB: db}
+
+        // Initialize TodoHandler with TodoService
+        todoHandler := handlers.NewTodoHandler(todoService)
+
+        // Define routes
+        mux := http.NewServeMux()
+
+        mux.HandleFunc("/todos", func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                switch r.Method </span>{
+                case http.MethodGet:<span class="cov0" title="0">
+                        todoHandler.GetAllTodos(w, r)</span>
+                case http.MethodPost:<span class="cov0" title="0">
+                        todoHandler.CreateTodo(w, r)</span>
+                default:<span class="cov0" title="0">
+                        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)</span>
+                }
+        })
+
+        <span class="cov0" title="0">mux.HandleFunc("/todos/", func(w http.ResponseWriter, r *http.Request) </span><span class="cov0" title="0">{
+                if r.Method == http.MethodGet </span><span class="cov0" title="0">{
+                        todoHandler.GetTodoByID(w, r)
+                }</span> else<span class="cov0" title="0"> if r.Method == http.MethodPut </span><span class="cov0" title="0">{
+                        todoHandler.UpdateTodo(w, r)
+                }</span> else<span class="cov0" title="0"> if r.Method == http.MethodDelete </span><span class="cov0" title="0">{
+                        todoHandler.DeleteTodo(w, r)
+                }</span> else<span class="cov0" title="0"> {
+                        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+                }</span>
+        })
+
+        // CORS middleware
+        <span class="cov0" title="0">corsHandler := cors.Default().Handler(mux)
+
+        // Start the server
+        port := ":8080"
+        fmt.Println("Server started on port", port)
+        log.Fatal(http.ListenAndServe(port, corsHandler))</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">// services/todo_service.go
+package services
+
+import (
+    "database/sql"
+    "strconv"
+    "todo_app/models"
+)
+
+// TodoService defines methods for interacting with todos
+type TodoService interface {
+    GetAllTodos() ([]models.Todo, error)
+    GetTodoByID(id string) (models.Todo, error)
+    CreateTodo(todo models.Todo) (models.Todo, error)
+    UpdateTodo(id string, todo models.Todo) (models.Todo, error)
+    DeleteTodo(id string) error
+}
+
+// TodoServiceImpl implements the TodoService interface
+type TodoServiceImpl struct {
+    DB *sql.DB // Database connection
+}
+
+// GetAllTodos returns all todos
+func (ts *TodoServiceImpl) GetAllTodos() ([]models.Todo, error) <span class="cov0" title="0">{
+    query := "SELECT id, title, description, completed FROM todos"
+    rows, err := ts.DB.Query(query)
+    if err != nil </span><span class="cov0" title="0">{
+        return nil, err
+    }</span>
+    <span class="cov0" title="0">defer rows.Close()
+
+    var todos []models.Todo
+    for rows.Next() </span><span class="cov0" title="0">{
+        var todo models.Todo
+        if err := rows.Scan(&amp;todo.ID, &amp;todo.Title, &amp;todo.Description, &amp;todo.Completed); err != nil </span><span class="cov0" title="0">{
+            return nil, err
+        }</span>
+        <span class="cov0" title="0">todos = append(todos, todo)</span>
+    }
+    <span class="cov0" title="0">return todos, nil</span>
+}
+
+// GetTodoByID returns a todo by ID
+func (ts *TodoServiceImpl) GetTodoByID(id string) (models.Todo, error) <span class="cov0" title="0">{
+    query := "SELECT id, title, description, completed FROM todos WHERE id = ?"
+    var todo models.Todo
+    err := ts.DB.QueryRow(query, id).Scan(&amp;todo.ID, &amp;todo.Title, &amp;todo.Description, &amp;todo.Completed)
+    if err != nil </span><span class="cov0" title="0">{
+        return models.Todo{}, err
+    }</span>
+    <span class="cov0" title="0">return todo, nil</span>
+}
+
+// CreateTodo creates a new todo
+func (ts *TodoServiceImpl) CreateTodo(todo models.Todo) (models.Todo, error) <span class="cov0" title="0">{
+    query := "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)"
+    result, err := ts.DB.Exec(query, todo.Title, todo.Description, todo.Completed)
+    if err != nil </span><span class="cov0" title="0">{
+        return models.Todo{}, err
+    }</span>
+    <span class="cov0" title="0">id, err := result.LastInsertId()
+    if err != nil </span><span class="cov0" title="0">{
+        return models.Todo{}, err
+    }</span>
+    <span class="cov0" title="0">todo.ID = int(id)
+    return todo, nil</span>
+}
+
+
+// UpdateTodo updates an existing todo
+func (ts *TodoServiceImpl) UpdateTodo(id string, updatedTodo models.Todo) (models.Todo, error) <span class="cov0" title="0">{
+    query := "UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?"
+    _, err := ts.DB.Exec(query, updatedTodo.Title, updatedTodo.Description, updatedTodo.Completed, id)
+    if err != nil </span><span class="cov0" title="0">{
+        return models.Todo{}, err
+    }</span>
+    <span class="cov0" title="0">updatedTodo.ID, _ = strconv.Atoi(id)
+    return updatedTodo, nil</span>
+}
+
+// DeleteTodo deletes a todo by ID
+func (ts *TodoServiceImpl) DeleteTodo(id string) error <span class="cov0" title="0">{
+    query := "DELETE FROM todos WHERE id = ?"
+    _, err := ts.DB.Exec(query, id)
+    if err != nil </span><span class="cov0" title="0">{
+        return err
+    }</span>
+    <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

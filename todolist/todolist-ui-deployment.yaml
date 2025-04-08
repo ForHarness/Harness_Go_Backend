@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todolist-ui
+spec:
+  replicas: 3
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: todolist-ui
+  template:
+    metadata:
+      labels:
+        app: todolist-ui
+    spec:
+      containers:
+      - image: shubhamchav/gotodolist:latest
+        name: todolist-ui
+        ports:
+        - containerPort: 8080
