@@ -46,20 +46,51 @@ pipeline:
                   timeout: ""
                   type: Run
               - step:
-                  identifier: dockerbuild
-                  name: docker_build
+                  type: Sonarqube
+                  name: Sonarqube
+                  identifier: Sonarqube
                   spec:
-                    caching: true
-                    connectorRef: <+input>
-                    repo: hello/world
+                    mode: orchestration
+                    config: default
+                    target:
+                      type: repository
+                      detection: auto
+                    advanced:
+                      log:
+                        level: info
+                    auth:
+                      access_token: 5ca7a9d7c023ff2d022e32d71f7b6cb1e97c8f1a
+                      domain: https://sonarcloud.io/
+                      ssl: true
+                    tool:
+                      project_key: sonarintegration-1_finalcicdbackend
+              - step:
+                  type: Semgrep
+                  name: Security scan
+                  identifier: Security_scan
+                  spec:
+                    mode: orchestration
+                    config: default
+                    target:
+                      type: repository
+                      detection: auto
+                    advanced:
+                      log:
+                        level: info
+              - step:
+                  type: BuildAndPushDockerRegistry
+                  name: BuildAndPushDockerRegistry
+                  identifier: BuildAndPushDockerRegistry
+                  spec:
+                    connectorRef: DOcker_Connector
+                    repo: shubhamchav/harnessbackend
                     tags:
                       - latest
-                  timeout: ""
-                  type: BuildAndPushDockerRegistry
+                    caching: true
           platform:
-            arch: Amd64
             os: Linux
+            arch: Amd64
           runtime:
-            spec: {}
             type: Cloud
+            spec: {}
         type: CI
