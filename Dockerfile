@@ -27,8 +27,8 @@ WORKDIR /app
 # Copy the built executable from the build stage
 COPY --from=builder /app/app .
 
-# Expose port 8082
-EXPOSE 8082
+# Expose port 8080
+EXPOSE 8080
 
 # Command to run the executable
 ENTRYPOINT ["./app"]
