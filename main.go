@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -15,12 +14,18 @@ import (
 
 func main() {
 	// Initialize database connection
-	dsn := "avnadmin:AVNS_GaiGgz2LtGMCFMVy9Qu-04@tcp(mysql-3e7e5281-datatodo.c.aivencloud.com:13540)/todo_app"
+	dsn := "avnadmin:AVNS_GaiGgz2LtGMCFMVy9Qu-04@tcp(mysql-3e7e5281-datatodo.c.aivencloud.com:13540)/todo_app?parseTime=true"
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal("Error connecting to the database:", err)
+		log.Fatalf("❌ Error opening database: %v", err)
 	}
-	// Close DB only if connection is successful
+
+	// Ping the database to verify connection
+	if err := db.Ping(); err != nil {
+		log.Fatalf("❌ Error pinging database: %v", err)
+	}
+
+	log.Println("✅ Successfully connected to database")
 	defer db.Close()
 
 	// Initialize TodoService
@@ -69,7 +74,6 @@ func main() {
 
 	// Start the server
 	port := "0.0.0.0:8080"
-	fmt.Println("Server started on port", port)
+	fmt.Println("🚀 Server started on port", port)
 	log.Fatal(http.ListenAndServe(port, handler))
 }
-
