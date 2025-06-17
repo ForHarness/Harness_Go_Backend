@@ -14,7 +14,7 @@ spec:
         app: todolist-ui
     spec:
       containers:
-      - image: shubhamchav/gotodolist:latest
+      - image: shubhamchav/harnessbackend:latest
         name: todolist-ui
         ports:
         - containerPort: 8080
